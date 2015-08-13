@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Flask'
-copyright = u'2013, Armin Ronacher'
+copyright = u'2015, Armin Ronacher'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -244,11 +244,13 @@ latex_additional_files = ['flaskstyle.sty', 'logo.pdf']
 #epub_tocdepth = 3
 
 intersphinx_mapping = {
-    'http://docs.python.org/dev': None,
+    'https://docs.python.org/dev': None,
     'http://werkzeug.pocoo.org/docs/': None,
+    'http://click.pocoo.org/': None,
+    'http://jinja.pocoo.org/docs/': None,
     'http://www.sqlalchemy.org/docs/': None,
-    'http://wtforms.simplecodes.com/docs/0.5/': None,
-    'http://discorporate.us/projects/Blinker/docs/1.1/': None
+    'https://wtforms.readthedocs.org/en/latest/': None,
+    'https://pythonhosted.org/blinker/': None
 }
 
 pygments_style = 'flask_theme_support.FlaskyStyle'
@@ -267,3 +269,24 @@ except ImportError, e:
     pygments_style = 'tango'
     html_theme = 'default'
     html_theme_options = {}
+
+
+# unwrap decorators
+def unwrap_decorators():
+    import sphinx.util.inspect as inspect
+    import functools
+
+    old_getargspec = inspect.getargspec
+    def getargspec(x):
+        return old_getargspec(getattr(x, '_original_function', x))
+    inspect.getargspec = getargspec
+
+    old_update_wrapper = functools.update_wrapper
+    def update_wrapper(wrapper, wrapped, *a, **kw):
+        rv = old_update_wrapper(wrapper, wrapped, *a, **kw)
+        rv._original_function = wrapped
+        return rv
+    functools.update_wrapper = update_wrapper
+
+unwrap_decorators()
+del unwrap_decorators

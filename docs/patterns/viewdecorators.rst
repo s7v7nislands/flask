@@ -2,12 +2,12 @@ View Decorators
 ===============
 
 Python has a really interesting feature called function decorators.  This
-allow some really neat things for web applications.  Because each view in
-Flask is a function decorators can be used to inject additional
+allows some really neat things for web applications.  Because each view in
+Flask is a function, decorators can be used to inject additional
 functionality to one or more functions.  The :meth:`~flask.Flask.route`
 decorator is the one you probably used already.  But there are use cases
 for implementing your own decorator.  For instance, imagine you have a
-view that should only be used by people that are logged in to.  If a user
+view that should only be used by people that are logged in.  If a user
 goes to the site and is not logged in, they should be redirected to the
 login page.  This is a good example of a use case where a decorator is an
 excellent solution.
@@ -23,7 +23,7 @@ often forgotten, but you don't have to do that by hand, there is a
 function for that that is used like a decorator (:func:`functools.wraps`).
 
 This example assumes that the login page is called ``'login'`` and that
-the current user is stored as `g.user` and `None` if there is no-one
+the current user is stored as `g.user` and ``None`` if there is no-one
 logged in::
 
     from functools import wraps
@@ -54,7 +54,7 @@ because of that you would like to cache the generated results for a
 certain amount of time.  A decorator would be nice for that.  We're
 assuming you have set up a cache like mentioned in :ref:`caching-pattern`.
 
-Here an example cache function.  It generates the cache key from a
+Here is an example cache function.  It generates the cache key from a
 specific prefix (actually a format string) and the current path of the
 request.  Notice that we are using a function that first creates the
 decorator that then decorates the function.  Sounds awful? Unfortunately
@@ -120,14 +120,14 @@ As you can see, if no template name is provided it will use the endpoint
 of the URL map with dots converted to slashes + ``'.html'``.  Otherwise
 the provided template name is used.  When the decorated function returns,
 the dictionary returned is passed to the template rendering function.  If
-`None` is returned, an empty dictionary is assumed, if something else than
+``None`` is returned, an empty dictionary is assumed, if something else than
 a dictionary is returned we return it from the function unchanged.  That
 way you can still use the redirect function or return simple strings.
 
-Here the code for that decorator::
+Here is the code for that decorator::
 
     from functools import wraps
-    from flask import request
+    from flask import request, render_template
 
     def templated(template=None):
         def decorator(f):
@@ -151,18 +151,15 @@ Endpoint Decorator
 ------------------
 
 When you want to use the werkzeug routing system for more flexibility you
-need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule` 
-to a view function. This is possible with this decorator. For example:: 
+need to map the endpoint as defined in the :class:`~werkzeug.routing.Rule`
+to a view function. This is possible with this decorator. For example::
 
     from flask import Flask
     from werkzeug.routing import Rule
 
-    app = Flask(__name__)                                                          
-    app.url_map.add(Rule('/', endpoint='index'))                                   
+    app = Flask(__name__)
+    app.url_map.add(Rule('/', endpoint='index'))
 
-    @app.endpoint('index')                                                         
-    def my_index():                                                                
-        return "Hello world"     
-
-
-
+    @app.endpoint('index')
+    def my_index():
+        return "Hello world"

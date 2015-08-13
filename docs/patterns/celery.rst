@@ -6,14 +6,14 @@ have a Flask integration but it became unnecessary after some
 restructuring of the internals of Celery with Version 3.  This guide fills
 in the blanks in how to properly use Celery with Flask but assumes that
 you generally already read the `First Steps with Celery
-<http://docs.celeryproject.org/en/master/getting-started/first-steps-with-celery.html>`_
+<http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html>`_
 guide in the official Celery documentation.
 
 Installing Celery
 -----------------
 
 Celery is on the Python Package Index (PyPI), so it can be installed with
-standard Python tools like ``pip`` or ``easy_install``::
+standard Python tools like :command:`pip` or :command:`easy_install`::
 
     $ pip install celery
 
@@ -36,7 +36,8 @@ This is all that is necessary to properly integrate Celery with Flask::
     from celery import Celery
 
     def make_celery(app):
-        celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
+        celery = Celery(app.import_name, backend=app.config['CELERY_BACKEND'],
+                        broker=app.config['CELERY_BROKER_URL'])
         celery.conf.update(app.config)
         TaskBase = celery.Task
         class ContextTask(TaskBase):
@@ -60,12 +61,12 @@ Flask::
 
     from flask import Flask
 
-    app = Flask(__name__)
-    app.config.update(
+    flask_app = Flask(__name__)
+    flask_app.config.update(
         CELERY_BROKER_URL='redis://localhost:6379',
         CELERY_RESULT_BACKEND='redis://localhost:6379'
     )
-    celery = make_celery(app)
+    celery = make_celery(flask_app)
 
 
     @celery.task()
@@ -86,7 +87,7 @@ disappointed to learn that your ``.wait()`` will never actually return.
 That's because you also need to run celery.  You can do that by running
 celery as a worker::
 
-    $ celery -A your_application worker
+    $ celery -A your_application.celery worker
 
 The ``your_application`` string has to point to your application's package
 or module that creates the `celery` object.

@@ -8,6 +8,8 @@ intentions. And before you ask: It's BSD licensed!
 Flask is Fun
 ````````````
 
+Save in a hello.py:
+
 .. code:: python
 
     from flask import Flask
@@ -22,6 +24,8 @@ Flask is Fun
 
 And Easy to Setup
 `````````````````
+
+And run it:
 
 .. code:: bash
 
@@ -38,47 +42,21 @@ Links
   <http://github.com/mitsuhiko/flask/zipball/master#egg=Flask-dev>`_
 
 """
-from __future__ import print_function
-from setuptools import Command, setup
+import re
+import ast
+from setuptools import setup
 
-class run_audit(Command):
-    """Audits source code using PyFlakes for following issues:
-        - Names which are used but not defined or used before they are defined.
-        - Names which are redefined without having been used.
-    """
-    description = "Audit source code with PyFlakes"
-    user_options = []
 
-    def initialize_options(self):
-        pass
+_version_re = re.compile(r'__version__\s+=\s+(.*)')
 
-    def finalize_options(self):
-        pass
+with open('flask/__init__.py', 'rb') as f:
+    version = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
 
-    def run(self):
-        import os, sys
-        try:
-            import pyflakes.scripts.pyflakes as flakes
-        except ImportError:
-            print("Audit requires PyFlakes installed in your system.")
-            sys.exit(-1)
-
-        warns = 0
-        # Define top-level directories
-        dirs = ('flask', 'examples', 'scripts')
-        for dir in dirs:
-            for root, _, files in os.walk(dir):
-                for file in files:
-                    if file != '__init__.py' and file.endswith('.py') :
-                        warns += flakes.checkPath(os.path.join(root, file))
-        if warns > 0:
-            print("Audit finished with total %d warnings." % warns)
-        else:
-            print("No problems found in sourcecode.")
 
 setup(
     name='Flask',
-    version='0.11-dev',
+    version=version,
     url='http://github.com/mitsuhiko/flask/',
     license='BSD',
     author='Armin Ronacher',
@@ -86,14 +64,15 @@ setup(
     description='A microframework based on Werkzeug, Jinja2 '
                 'and good intentions',
     long_description=__doc__,
-    packages=['flask', 'flask.ext', 'flask.testsuite'],
+    packages=['flask', 'flask.ext'],
     include_package_data=True,
     zip_safe=False,
     platforms='any',
     install_requires=[
         'Werkzeug>=0.7',
         'Jinja2>=2.4',
-        'itsdangerous>=0.21'
+        'itsdangerous>=0.21',
+        'click>=2.0',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -106,6 +85,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    cmdclass={'audit': run_audit},
-    test_suite='flask.testsuite.suite'
+    entry_points='''
+        [console_scripts]
+        flask=flask.cli:main
+    '''
 )

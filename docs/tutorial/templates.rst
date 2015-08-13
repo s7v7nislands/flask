@@ -3,8 +3,8 @@
 Step 6: The Templates
 =====================
 
-Now we should start working on the templates.  If we request the URLs now
-we would only get an exception that Flask cannot find the templates.  The
+Now we should start working on the templates.  If we were to request the URLs
+now, we would only get an exception that Flask cannot find the templates.  The
 templates are using `Jinja2`_ syntax and have autoescaping enabled by
 default.  This means that unless you mark a value in the code with
 :class:`~flask.Markup` or with the ``|safe`` filter in the template,
@@ -14,9 +14,9 @@ escaped with their XML equivalents.
 We are also using template inheritance which makes it possible to reuse
 the layout of the website in all pages.
 
-Put the following templates into the `templates` folder:
+Put the following templates into the :file:`templates` folder:
 
-.. _Jinja2: http://jinja.pocoo.org/2/documentation/templates
+.. _Jinja2: http://jinja.pocoo.org/docs/templates
 
 layout.html
 -----------
@@ -55,10 +55,10 @@ the session:
 show_entries.html
 -----------------
 
-This template extends the `layout.html` template from above to display the
-messages.  Note that the `for` loop iterates over the messages we passed
+This template extends the :file:`layout.html` template from above to display the
+messages.  Note that the ``for`` loop iterates over the messages we passed
 in with the :func:`~flask.render_template` function.  We also tell the
-form to submit to your `add_entry` function and use `POST` as `HTTP`
+form to submit to your `add_entry` function and use ``POST`` as HTTP
 method:
 
 .. sourcecode:: html+jinja
@@ -88,7 +88,7 @@ method:
 login.html
 ----------
 
-Finally the login template which basically just displays a form to allow
+This is the login template, which basically just displays a form to allow
 the user to login:
 
 .. sourcecode:: html+jinja
